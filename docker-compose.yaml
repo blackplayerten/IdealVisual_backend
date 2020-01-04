@@ -1,0 +1,14 @@
+version: "3"
+services:
+  redis:
+    image: redis:5.0.7-alpine3.11
+    container_name: redis
+
+  ideal-visual:
+    image: ideal-visual
+    container_name: ideal-visual
+    depends_on:
+      - redis
+    build: .
+    ports:
+      - 8080:8080
