@@ -1,0 +1,13 @@
+server:
+  http:
+    addr: ":8080"
+    timeout: 1m
+
+  static:
+    root: "/usr/local/var/www/ideal-visual/static"
+    keepOriginalName: false
+
+session:
+  database: 0
+  connString: "user@redis:6379"
+  expiration: 2160h
