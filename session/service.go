@@ -45,24 +45,27 @@ func (s *Service) Connect() error {
 
 func (s *Service) ConnectWithCtx(ctx context.Context) error {
 	conn, err := s.pool.GetContext(ctx)
-	defer conn.Close()
 	if err != nil {
 		s.l.Error(
 			"cannot open connection",
 			zap.Int("db", s.cfg.Database), zap.String("connString", s.cfg.ConnString), zap.Error(err),
 		)
+
 		return err
 	}
-	_, err = conn.Do("PING")
-	if err != nil {
+	defer conn.Close()
+
+	if _, err = conn.Do("PING"); err != nil {
 		s.l.Error(
 			"cannot ping connection",
 			zap.Int("db", s.cfg.Database), zap.String("connString", s.cfg.ConnString), zap.Error(err),
 		)
+
 		return err
 	}
 
 	s.l.Info("successfully connected", zap.Int("db", s.cfg.Database), zap.String("connString", s.cfg.ConnString))
+
 	return nil
 }
 
@@ -73,7 +76,9 @@ func (s *Service) Close() {
 func (s *Service) Create(userID uint64) (string, error) {
 	conn := s.pool.Get()
 	defer conn.Close()
+
 	var sID string
+
 	for {
 		sID = uuid.NewV4().String()
 		if res, err := redis.String(conn.Do(
@@ -92,11 +97,13 @@ func (s *Service) Create(userID uint64) (string, error) {
 func (s *Service) Get(sessionID string) (uint64, error) {
 	conn := s.pool.Get()
 	defer conn.Close()
+
 	res, err := redis.Uint64(conn.Do("GET", sessionID))
 	if err != nil {
 		if err == redis.ErrNil {
 			return 0, ErrKeyNotFound
 		}
+
 		return 0, err
 	}
 
@@ -106,6 +113,7 @@ func (s *Service) Get(sessionID string) (uint64, error) {
 func (s *Service) Delete(sessionID string) error {
 	conn := s.pool.Get()
 	defer conn.Close()
+
 	if _, err := conn.Do("DEL", sessionID); err != nil {
 		return err
 	}
