@@ -48,7 +48,9 @@ func (s *Service) ConnectWithCtx(ctx context.Context) error {
 	if err != nil {
 		s.l.Error(
 			"cannot open connection",
-			zap.Int("db", s.cfg.Database), zap.String("connString", s.cfg.ConnString), zap.Error(err),
+			zap.Error(err),
+			zap.String("connString", s.cfg.ConnString),
+			zap.Int("db", s.cfg.Database),
 		)
 
 		return err
@@ -58,19 +60,24 @@ func (s *Service) ConnectWithCtx(ctx context.Context) error {
 	if _, err = conn.Do("PING"); err != nil {
 		s.l.Error(
 			"cannot ping connection",
-			zap.Int("db", s.cfg.Database), zap.String("connString", s.cfg.ConnString), zap.Error(err),
+			zap.Error(err),
+			zap.String("connString", s.cfg.ConnString),
+			zap.Int("db", s.cfg.Database),
 		)
 
 		return err
 	}
 
-	s.l.Info("successfully connected", zap.Int("db", s.cfg.Database), zap.String("connString", s.cfg.ConnString))
+	s.l.Info("successfully connected",
+		zap.String("connString", s.cfg.ConnString),
+		zap.Int("db", s.cfg.Database),
+	)
 
 	return nil
 }
 
-func (s *Service) Close() {
-	s.pool.Close()
+func (s *Service) Close() error {
+	return s.pool.Close()
 }
 
 func (s *Service) Create(userID uint64) (string, error) {

@@ -4,6 +4,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 
+	"github.com/blackplayerten/IdealVisual_backend/account"
 	"github.com/blackplayerten/IdealVisual_backend/session"
 )
 
@@ -14,9 +15,10 @@ type Server struct {
 	l *zap.Logger
 
 	sessionSvc *session.Service
+	accountSvc *account.Service
 }
 
-func New(cfg *Config, l *zap.Logger, sessionSvc *session.Service) (*Server, error) {
+func New(cfg *Config, l *zap.Logger, sessionSvc *session.Service, accountSvc *account.Service) (*Server, error) {
 	s := &Server{
 		cfg: cfg,
 
@@ -27,6 +29,7 @@ func New(cfg *Config, l *zap.Logger, sessionSvc *session.Service) (*Server, erro
 		l: l,
 
 		sessionSvc: sessionSvc,
+		accountSvc: accountSvc,
 	}
 	s.s.Handler = s.handleRequest
 	s.s.ErrorHandler = s.handleError

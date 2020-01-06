@@ -3,12 +3,28 @@ services:
   redis:
     image: redis:5.0.7-alpine3.11
     container_name: redis
-
-  ideal-visual:
-    image: ideal-visual
-    container_name: ideal-visual
-    depends_on:
-      - redis
-    build: .
+    volumes:
+      - /usr/local/var/www/ideal-visual/redis/data:/data
     ports:
-      - 8080:8080
+      - 6379:6379
+
+  postgres:
+    image: postgres:12.1-alpine
+    container_name: postgres
+    volumes:
+      - /usr/local/var/www/ideal-visual/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+# we cannot run daemon, because postgres launches too long and daemon dies without connection to it
+#  ideal-visual:
+#    image: ideal-visual
+#    container_name: ideal-visual
+#    depends_on:
+#      - redis
+#      - postgres
+#    build: .
+#    ports:
+#      - 8080:8080
+#    volumes:
+#      - /usr/local/var/www/ideal-visual/static:/usr/local/var/www/ideal-visual/static

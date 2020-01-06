@@ -9,5 +9,11 @@ server:
 
 session:
   database: 0
-  connString: "user@redis:6379"
+  connString: "user@localhost:6379"
   expiration: 2160h
+
+account:
+  database:
+    name: "postgres"
+    connString: "postgres@localhost:5432"
+    migrationsFolder: "account/migrations"

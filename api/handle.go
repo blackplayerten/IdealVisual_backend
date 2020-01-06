@@ -1,14 +1,14 @@
 package api
 
 import (
+	"encoding/json"
+
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 )
 
 func (s *Server) handleRequest(ctx *fasthttp.RequestCtx) {
-	s.recoverMiddleware(fasthttp.TimeoutHandler(setContentTypeToAppJSON(
-		s.authMiddleware(s.route),
-	), s.cfg.HTTP.Timeout, ""))(ctx)
+	s.recoverMiddleware(fasthttp.TimeoutHandler(s.authMiddleware(s.route), s.cfg.HTTP.Timeout, ""))(ctx)
 }
 
 func (s *Server) handleError(_ *fasthttp.RequestCtx, err error) {
@@ -21,7 +21,7 @@ func (s *Server) route(ctx *fasthttp.RequestCtx) {
 	case "/session":
 		s.handleSession(ctx)
 	case "/account":
-
+		s.handleAccount(ctx)
 	case "/post":
 
 	case "/upload":
@@ -34,10 +34,36 @@ func (s *Server) route(ctx *fasthttp.RequestCtx) {
 func (s *Server) handleSession(ctx *fasthttp.RequestCtx) {
 	switch string(ctx.Method()) {
 	case fasthttp.MethodPost:
-		// TODO: think about authorization type
+		s.newSession(ctx)
 	case fasthttp.MethodDelete:
-
+		s.deleteSession(ctx)
 	default:
 		ctx.SetStatusCode(fasthttp.StatusMethodNotAllowed)
 	}
+}
+
+func (s *Server) handleAccount(ctx *fasthttp.RequestCtx) {
+	switch string(ctx.Method()) {
+	case fasthttp.MethodGet:
+		s.getAccount(ctx)
+	case fasthttp.MethodPost:
+		s.newAccount(ctx)
+	case fasthttp.MethodPut:
+		s.updateAccount(ctx)
+	default:
+		ctx.SetStatusCode(fasthttp.StatusMethodNotAllowed)
+	}
+}
+
+func (s *Server) writeJSONResponse(ctx *fasthttp.RequestCtx, resp json.Marshaler) {
+	j, err := resp.MarshalJSON()
+	if err != nil {
+		s.l.Error("cannot marshal json", zap.Error(err))
+		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+
+		return
+	}
+
+	ctx.SetContentTypeBytes([]byte("application/json"))
+	ctx.Write(j) // nolint:errcheck
 }

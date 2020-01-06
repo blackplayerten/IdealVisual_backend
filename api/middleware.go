@@ -44,7 +44,7 @@ func (s *Server) authMiddleware(handler fasthttp.RequestHandler) fasthttp.Reques
 				switch err {
 				case nil:
 					ctx.SetUserValue(KeyIsAuthenticated, true)
-					ctx.SetUserValue(KeySessionID, token)
+					ctx.SetUserValue(KeySessionID, string(token))
 					ctx.SetUserValue(KeyUserID, userID)
 				case session.ErrKeyNotFound:
 					ctx.SetUserValue(KeyIsAuthenticated, false)
@@ -62,13 +62,5 @@ func (s *Server) authMiddleware(handler fasthttp.RequestHandler) fasthttp.Reques
 		}
 
 		handler(ctx)
-	}
-}
-
-func setContentTypeToAppJSON(handler fasthttp.RequestHandler) fasthttp.RequestHandler {
-	return func(ctx *fasthttp.RequestCtx) {
-		handler(ctx)
-
-		ctx.SetContentTypeBytes([]byte("application/json"))
 	}
 }

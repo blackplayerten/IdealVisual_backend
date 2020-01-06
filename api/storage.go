@@ -62,15 +62,8 @@ func (s *Server) upload(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	j, err := UploadedPath{Path: name}.MarshalJSON()
-	if err != nil {
-		s.l.Error("cannot marshal json", zap.Error(err))
-		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
-
-		return
-	}
-
-	ctx.Write(j) // nolint:errcheck
+	uploadedTo := UploadedPath{Path: name}
+	s.writeJSONResponse(ctx, &uploadedTo)
 }
 
 func saveFile(file io.Reader, path, filename string) error {
