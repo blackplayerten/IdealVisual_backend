@@ -90,6 +90,8 @@ func (s *Server) updateAccount(ctx *fasthttp.RequestCtx) {
 	}
 
 	if len(validationErrors) != 0 {
+		ctx.SetStatusCode(fasthttp.StatusUnprocessableEntity)
+
 		errors := Errors{Errors: validationErrors}
 		s.writeJSONResponse(ctx, &errors)
 
