@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"time"
 
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
@@ -65,13 +66,45 @@ func (s *Server) authMiddleware(handler fasthttp.RequestHandler) fasthttp.Reques
 	}
 }
 
+// TODO: request ID
 func (s *Server) accessLogMiddleware(handler fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
-		s.l.Info("access",
+		body := ctx.PostBody()
+
+		size := len(body)
+		if size > 1024 {
+			size = 1024
+		}
+
+		// sensitive information
+		s.l.Info("access request",
+			zap.ByteString("method", ctx.Method()),
 			zap.ByteString("path", ctx.RequestURI()),
-			zap.ByteString("body", ctx.PostBody()),
+			zap.ByteString("content-type", ctx.Request.Header.Peek("Content-Type")),
+			zap.ByteString("body", body[:size]),
+
+			zap.ByteString("authorization", ctx.Request.Header.Peek("Authorization")),
 		)
 
+		started := time.Now()
+
 		handler(ctx)
+
+		ended := time.Since(started)
+
+		body = ctx.Response.Body()
+
+		size = len(body)
+		if size > 1024 {
+			size = 1024
+		}
+
+		// sensitive information
+		s.l.Info("access response",
+			zap.Int("code", ctx.Response.StatusCode()),
+			zap.ByteString("content-type", ctx.Response.Header.Peek("Content-Type")),
+			zap.ByteString("body", body[:size]),
+			zap.Duration("timing", ended),
+		)
 	}
 }
