@@ -40,6 +40,8 @@ func (s *Server) newAccount(ctx *fasthttp.RequestCtx) {
 	validationErrors := validateAll(&info)
 
 	if len(validationErrors) != 0 {
+		ctx.SetStatusCode(fasthttp.StatusUnprocessableEntity)
+
 		errors := Errors{Errors: validationErrors}
 		s.writeJSONResponse(ctx, &errors)
 
