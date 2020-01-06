@@ -64,3 +64,14 @@ func (s *Server) authMiddleware(handler fasthttp.RequestHandler) fasthttp.Reques
 		handler(ctx)
 	}
 }
+
+func (s *Server) accessLogMiddleware(handler fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		s.l.Info("access",
+			zap.ByteString("path", ctx.RequestURI()),
+			zap.ByteString("body", ctx.PostBody()),
+		)
+
+		handler(ctx)
+	}
+}

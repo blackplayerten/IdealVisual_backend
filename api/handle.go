@@ -8,7 +8,9 @@ import (
 )
 
 func (s *Server) handleRequest(ctx *fasthttp.RequestCtx) {
-	s.recoverMiddleware(fasthttp.TimeoutHandler(s.authMiddleware(s.route), s.cfg.HTTP.Timeout, ""))(ctx)
+	s.recoverMiddleware(s.accessLogMiddleware(fasthttp.TimeoutHandler(
+		s.authMiddleware(s.route),
+		s.cfg.HTTP.Timeout, "")))(ctx)
 }
 
 func (s *Server) handleError(_ *fasthttp.RequestCtx, err error) {
