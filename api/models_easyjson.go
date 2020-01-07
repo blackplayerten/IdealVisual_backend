@@ -4,6 +4,8 @@ package api
 
 import (
 	json "encoding/json"
+	account "github.com/blackplayerten/IdealVisual_backend/account"
+	post "github.com/blackplayerten/IdealVisual_backend/post"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -17,7 +19,139 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(in *jlexer.Lexer, out *FieldError) {
+func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(in *jlexer.Lexer, out *UploadedPath) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "path":
+			out.Path = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(out *jwriter.Writer, in UploadedPath) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"path\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Path))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v UploadedPath) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v UploadedPath) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *UploadedPath) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *UploadedPath) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(l, v)
+}
+func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(in *jlexer.Lexer, out *Posts) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		in.Skip()
+		*out = nil
+	} else {
+		in.Delim('[')
+		if *out == nil {
+			if !in.IsDelim(']') {
+				*out = make(Posts, 0, 1)
+			} else {
+				*out = Posts{}
+			}
+		} else {
+			*out = (*out)[:0]
+		}
+		for !in.IsDelim(']') {
+			var v1 post.Post
+			(v1).UnmarshalEasyJSON(in)
+			*out = append(*out, v1)
+			in.WantComma()
+		}
+		in.Delim(']')
+	}
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(out *jwriter.Writer, in Posts) {
+	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		out.RawString("null")
+	} else {
+		out.RawByte('[')
+		for v2, v3 := range in {
+			if v2 > 0 {
+				out.RawByte(',')
+			}
+			(v3).MarshalEasyJSON(out)
+		}
+		out.RawByte(']')
+	}
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v Posts) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v Posts) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *Posts) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *Posts) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(l, v)
+}
+func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi2(in *jlexer.Lexer, out *FieldError) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -54,9 +188,9 @@ func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(in *jlex
 					out.Reasons = (out.Reasons)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v1 string
-					v1 = string(in.String())
-					out.Reasons = append(out.Reasons, v1)
+					var v4 string
+					v4 = string(in.String())
+					out.Reasons = append(out.Reasons, v4)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -71,7 +205,7 @@ func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(in *jlex
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(out *jwriter.Writer, in FieldError) {
+func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi2(out *jwriter.Writer, in FieldError) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -87,11 +221,11 @@ func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(out *jwr
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v2, v3 := range in.Reasons {
-				if v2 > 0 {
+			for v5, v6 := range in.Reasons {
+				if v5 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v3))
+				out.String(string(v6))
 			}
 			out.RawByte(']')
 		}
@@ -102,27 +236,27 @@ func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(out *jwr
 // MarshalJSON supports json.Marshaler interface
 func (v FieldError) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(&w, v)
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v FieldError) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi(w, v)
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *FieldError) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(&r, v)
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *FieldError) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi(l, v)
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi2(l, v)
 }
-func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(in *jlexer.Lexer, out *Errors) {
+func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi3(in *jlexer.Lexer, out *Errors) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -157,17 +291,17 @@ func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(in *jle
 					out.Errors = (out.Errors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v4 *FieldError
+					var v7 *FieldError
 					if in.IsNull() {
 						in.Skip()
-						v4 = nil
+						v7 = nil
 					} else {
-						if v4 == nil {
-							v4 = new(FieldError)
+						if v7 == nil {
+							v7 = new(FieldError)
 						}
-						(*v4).UnmarshalEasyJSON(in)
+						(*v7).UnmarshalEasyJSON(in)
 					}
-					out.Errors = append(out.Errors, v4)
+					out.Errors = append(out.Errors, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -182,7 +316,7 @@ func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(in *jle
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(out *jwriter.Writer, in Errors) {
+func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi3(out *jwriter.Writer, in Errors) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -193,14 +327,14 @@ func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(out *jw
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v5, v6 := range in.Errors {
-				if v5 > 0 {
+			for v8, v9 := range in.Errors {
+				if v8 > 0 {
 					out.RawByte(',')
 				}
-				if v6 == nil {
+				if v9 == nil {
 					out.RawString("null")
 				} else {
-					(*v6).MarshalEasyJSON(out)
+					(*v9).MarshalEasyJSON(out)
 				}
 			}
 			out.RawByte(']')
@@ -212,23 +346,126 @@ func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v Errors) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(&w, v)
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi3(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Errors) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi1(w, v)
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi3(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Errors) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(&r, v)
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi3(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Errors) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi1(l, v)
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi3(l, v)
+}
+func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi4(in *jlexer.Lexer, out *AccWithToken) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	out.Account = new(account.Account)
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "token":
+			out.Token = string(in.String())
+		case "id":
+			out.ID = uint64(in.Uint64())
+		case "email":
+			out.Email = string(in.String())
+		case "username":
+			out.Username = string(in.String())
+		case "avatar":
+			if in.IsNull() {
+				in.Skip()
+				out.Avatar = nil
+			} else {
+				if out.Avatar == nil {
+					out.Avatar = new(string)
+				}
+				*out.Avatar = string(in.String())
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi4(out *jwriter.Writer, in AccWithToken) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"token\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Token))
+	}
+	{
+		const prefix string = ",\"id\":"
+		out.RawString(prefix)
+		out.Uint64(uint64(in.ID))
+	}
+	{
+		const prefix string = ",\"email\":"
+		out.RawString(prefix)
+		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"username\":"
+		out.RawString(prefix)
+		out.String(string(in.Username))
+	}
+	if in.Avatar != nil {
+		const prefix string = ",\"avatar\":"
+		out.RawString(prefix)
+		out.String(string(*in.Avatar))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v AccWithToken) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi4(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v AccWithToken) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendApi4(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *AccWithToken) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi4(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *AccWithToken) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendApi4(l, v)
 }

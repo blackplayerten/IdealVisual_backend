@@ -5,13 +5,8 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/blackplayerten/IdealVisual_backend/account"
+	"github.com/blackplayerten/IdealVisual_backend/database"
 )
-
-//easyjson:json
-type AccWithToken struct {
-	Token string `json:"token"`
-	*account.Account
-}
 
 func (s *Server) newSession(ctx *fasthttp.RequestCtx) {
 	if ctx.UserValue(KeyIsAuthenticated).(bool) {
@@ -21,7 +16,7 @@ func (s *Server) newSession(ctx *fasthttp.RequestCtx) {
 
 		acc, err := s.accountSvc.GetByID(userID)
 		if err != nil {
-			if err == account.ErrNotFound {
+			if err == database.ErrNotFound {
 				ctx.SetStatusCode(fasthttp.StatusForbidden)
 				return
 			}

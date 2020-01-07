@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/blackplayerten/IdealVisual_backend/account"
+	"github.com/blackplayerten/IdealVisual_backend/database"
 )
 
 func (s *Server) getAccount(ctx *fasthttp.RequestCtx) {
@@ -17,7 +18,7 @@ func (s *Server) getAccount(ctx *fasthttp.RequestCtx) {
 
 	acc, err := s.accountSvc.GetByID(userID)
 	if err != nil {
-		if err == account.ErrNotFound {
+		if err == database.ErrNotFound {
 			ctx.SetStatusCode(fasthttp.StatusNotFound)
 			return
 		}
@@ -111,18 +112,10 @@ func (s *Server) updateAccount(ctx *fasthttp.RequestCtx) {
 
 func (s *Server) processAccountCreationUpdateError(ctx *fasthttp.RequestCtx, err error) {
 	switch tErr := err.(type) {
-	case account.UniqueConstraintViolationError:
+	case database.UniqueConstraintViolationError:
 		errors := Errors{Errors: []*FieldError{{
 			Field:   tErr.Field,
 			Reasons: []string{AlreadyExists},
-		}}}
-		s.writeJSONResponse(ctx, &errors)
-	case account.NotNullConstraintViolationError:
-		s.l.Error("buggy endpoint, no null constraint violation expected", zap.String("field", tErr.Field))
-
-		errors := Errors{Errors: []*FieldError{{
-			Field:   tErr.Field,
-			Reasons: []string{WrongLen},
 		}}}
 		s.writeJSONResponse(ctx, &errors)
 	default:

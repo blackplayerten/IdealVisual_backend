@@ -7,15 +7,15 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/blackplayerten/IdealVisual_backend/account"
 	"github.com/blackplayerten/IdealVisual_backend/api"
+	"github.com/blackplayerten/IdealVisual_backend/database"
 	"github.com/blackplayerten/IdealVisual_backend/session"
 )
 
 type Config struct {
-	Server  *api.Config
-	Session *session.Config
-	Account *account.Config
+	Server     *api.Config
+	Session    *session.Config
+	DataSource *database.Config
 }
 
 func NewConfig() (*Config, error) {
@@ -47,12 +47,10 @@ func NewConfig() (*Config, error) {
 		"connString": "user@localhost:6379",
 		"expiration": 2160 * time.Hour,
 	})
-	viper.SetDefault("account", map[string]interface{}{
-		"database": map[string]interface{}{
-			"name":             "postgres",
-			"connString":       "postgres@localhost:5432",
-			"migrationsFolder": "account/migrations",
-		},
+	viper.SetDefault("dataSource", map[string]interface{}{
+		"name":             "postgres",
+		"connString":       "postgres@localhost:5432",
+		"migrationsFolder": "account/migrations",
 	})
 
 	if err := viper.ReadInConfig(); err != nil {

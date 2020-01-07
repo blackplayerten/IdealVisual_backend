@@ -6,15 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 )
-
-//easyjson:json
-type UploadedPath struct {
-	Path string `json:"path"`
-}
 
 func (s *Server) upload(ctx *fasthttp.RequestCtx) {
 	if !ctx.IsPost() {
@@ -43,7 +38,7 @@ func (s *Server) upload(ctx *fasthttp.RequestCtx) {
 
 	name := header.Filename
 	if !s.cfg.Static.KeepOriginalName {
-		name = uuid.NewV4().String() + filepath.Ext(name)
+		name = uuid.New().String() + filepath.Ext(name)
 	}
 
 	file, err := header.Open()

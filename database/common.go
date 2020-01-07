@@ -1,11 +1,11 @@
-package account
+package database
 
 import (
 	"fmt"
 	"io"
 )
 
-func updateSetOneField(q io.StringWriter, fieldName string, value interface{}, n *int, args *[]interface{}) error {
+func UpdateSetOneField(q io.StringWriter, fieldName string, value interface{}, n *int, args *[]interface{}) error {
 	if *n != 1 {
 		if _, err := q.WriteString(`, `); err != nil {
 			return err

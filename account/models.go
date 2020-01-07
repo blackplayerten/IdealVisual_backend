@@ -1,8 +1,6 @@
 package account
 
-import (
-	"time"
-)
+//go:generate easyjson models.go
 
 //easyjson:json
 type Credentials struct {
@@ -23,14 +21,4 @@ type Account struct {
 type FullAccount struct {
 	Account
 	Password string `json:"password"`
-}
-
-//easyjson:json
-type Post struct {
-	ID         string     `json:"id"`
-	Photo      string     `json:"photo"`
-	PhotoIndex int        `json:"photo_index"`
-	Date       *time.Time `json:"date,omitempty"`
-	Place      *string    `json:"place,omitempty"`
-	Text       *string    `json:"text,omitempty"`
 }

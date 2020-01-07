@@ -6,8 +6,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/lib/pq"
+	"github.com/lib/pq" // TODO: move to database (obertka)
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/blackplayerten/IdealVisual_backend/database"
 )
 
 func (s *Service) CheckCredentials(cr *Credentials) (*Account, bool, error) {
@@ -39,7 +41,7 @@ func (s *Service) GetByID(id uint64) (*Account, error) {
 	acc := new(Account)
 	if err := s.db.Get(acc, `SELECT id, email, username, avatar FROM account WHERE id = $1`, id); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, ErrNotFound
+			return nil, database.ErrNotFound
 		}
 
 		return nil, err
@@ -58,17 +60,17 @@ func (s *Service) New(info *FullAccount) (*Account, error) {
 
 	if err = s.db.Get(
 		acc,
-		`INSERT INTO account (email, password, username) VALUES ($1, $2, $3) RETURNING id, email, username`,
+		`INSERT INTO account (email, password, username, avatar) VALUES ($1, $2, $3, $4)
+RETURNING id, email, username, avatar`,
 		info.Email,
 		hashedPassword,
 		info.Username,
+		info.Avatar,
 	); err != nil {
-		pqErr := err.(*pq.Error)
-		switch pqErr.Code {
-		case "23505":
-			return nil, UniqueConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
-		case "23502":
-			return nil, NotNullConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				return nil, database.UniqueConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
+			}
 		}
 
 		return nil, err
@@ -102,12 +104,10 @@ func (s *Service) Update(upd *FullAccount) (*Account, error) {
 
 	acc := new(Account)
 	if err := s.db.Get(acc, queryBuilder.String(), args...); err != nil {
-		pqErr := err.(*pq.Error)
-		switch pqErr.Code {
-		case "23505":
-			return nil, UniqueConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
-		case "23502":
-			return nil, NotNullConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				return nil, database.UniqueConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
+			}
 		}
 
 		return nil, err
@@ -127,13 +127,13 @@ func buildUpdateAccountFieldsQuery(
 	}
 
 	if upd.Email != "" {
-		if err := updateSetOneField(queryBuilder, "email", upd.Email, n, args); err != nil {
+		if err := database.UpdateSetOneField(queryBuilder, "email", upd.Email, n, args); err != nil {
 			return err
 		}
 	}
 
 	if upd.Username != "" {
-		if err := updateSetOneField(queryBuilder, "username", upd.Username, n, args); err != nil {
+		if err := database.UpdateSetOneField(queryBuilder, "username", upd.Username, n, args); err != nil {
 			return err
 		}
 	}
@@ -144,13 +144,13 @@ func buildUpdateAccountFieldsQuery(
 			return err
 		}
 
-		if err := updateSetOneField(queryBuilder, "password", upd.Password, n, args); err != nil {
+		if err := database.UpdateSetOneField(queryBuilder, "password", upd.Password, n, args); err != nil {
 			return err
 		}
 	}
 
 	if upd.Avatar != nil && *upd.Avatar != "" {
-		if err := updateSetOneField(queryBuilder, "avatar", upd.Avatar, n, args); err != nil {
+		if err := database.UpdateSetOneField(queryBuilder, "avatar", upd.Avatar, n, args); err != nil {
 			return err
 		}
 	}

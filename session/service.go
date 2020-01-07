@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
@@ -87,7 +87,7 @@ func (s *Service) Create(userID uint64) (string, error) {
 	var sID string
 
 	for {
-		sID = uuid.NewV4().String()
+		sID = uuid.New().String()
 		if res, err := redis.String(conn.Do(
 			"SET", sID, userID, "NX", "EX", int64(s.cfg.Expiration.Round(1*time.Second)))); err != nil {
 			return "", err

@@ -5,6 +5,8 @@ github.com/fsnotify/fsnotify
 # github.com/gomodule/redigo v2.0.0+incompatible
 github.com/gomodule/redigo/internal
 github.com/gomodule/redigo/redis
+# github.com/google/uuid v1.1.1
+github.com/google/uuid
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast
@@ -43,8 +45,6 @@ github.com/pelletier/go-toml
 # github.com/rubenv/sql-migrate v0.0.0-20191213152630-06338513c237
 github.com/rubenv/sql-migrate
 github.com/rubenv/sql-migrate/sqlparse
-# github.com/satori/go.uuid v1.2.0
-github.com/satori/go.uuid
 # github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem

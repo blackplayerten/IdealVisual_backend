@@ -25,7 +25,7 @@ func (s *Server) route(ctx *fasthttp.RequestCtx) {
 	case "/account":
 		s.handleAccount(ctx)
 	case "/post":
-
+		s.handlePost(ctx)
 	case "/upload":
 		s.upload(ctx)
 	default:
@@ -52,6 +52,21 @@ func (s *Server) handleAccount(ctx *fasthttp.RequestCtx) {
 		s.newAccount(ctx)
 	case fasthttp.MethodPut:
 		s.updateAccount(ctx)
+	default:
+		ctx.SetStatusCode(fasthttp.StatusMethodNotAllowed)
+	}
+}
+
+func (s *Server) handlePost(ctx *fasthttp.RequestCtx) {
+	switch string(ctx.Method()) {
+	case fasthttp.MethodGet:
+		s.getPost(ctx)
+	case fasthttp.MethodPost:
+		s.newPost(ctx)
+	case fasthttp.MethodPut:
+		s.updatePost(ctx)
+	case fasthttp.MethodDelete:
+		s.deletePost(ctx)
 	default:
 		ctx.SetStatusCode(fasthttp.StatusMethodNotAllowed)
 	}

@@ -1,4 +1,4 @@
-package account
+package database
 
 import (
 	"errors"
@@ -22,4 +22,12 @@ type NotNullConstraintViolationError struct {
 
 func (n NotNullConstraintViolationError) Error() string {
 	return "not null constraint violated"
+}
+
+type ForeignKeyViolation struct {
+	Field string
+}
+
+func (f ForeignKeyViolation) Error() string {
+	return "foreign key violated"
 }

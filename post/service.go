@@ -1,4 +1,4 @@
-package account
+package post
 
 import (
 	"github.com/blackplayerten/IdealVisual_backend/database"
@@ -8,8 +8,8 @@ type Service struct {
 	db *database.Database
 }
 
-func New(dataSource *database.Database) *Service {
+func New(db *database.Database) *Service {
 	return &Service{
-		db: dataSource,
+		db: db,
 	}
 }

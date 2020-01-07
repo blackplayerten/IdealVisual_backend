@@ -13,6 +13,8 @@ import (
 	"github.com/blackplayerten/IdealVisual_backend/account"
 	"github.com/blackplayerten/IdealVisual_backend/api"
 	"github.com/blackplayerten/IdealVisual_backend/config"
+	"github.com/blackplayerten/IdealVisual_backend/database"
+	"github.com/blackplayerten/IdealVisual_backend/post"
 	"github.com/blackplayerten/IdealVisual_backend/session"
 )
 
@@ -40,15 +42,33 @@ func main() {
 	cancel()
 	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 
-	accountSvc := account.New(l.With(zap.Namespace("account")), cfg.Account)
-	if err := accountSvc.ConnectWithCtx(ctx); err != nil {
+	ds := database.NewDatabase(cfg.DataSource)
+	if err := ds.ConnectToDB(ctx); err != nil {
 		cancel()
-		l.Fatal("cannot create account service", zap.Error(err))
+		l.Fatal("cannot create data source",
+			zap.Error(err),
+			zap.String("connString", cfg.DataSource.ConnString),
+			zap.String("name", cfg.DataSource.Name),
+		)
 	}
 
 	cancel()
+	l.Info("successfully connected to data source",
+		zap.String("connString", cfg.DataSource.ConnString),
+		zap.String("name", cfg.DataSource.Name),
+	)
 
-	srv, err := api.New(cfg.Server, l.With(zap.Namespace("server")), sessionSvc, accountSvc)
+	n, err := ds.ApplyMigrations()
+	if err != nil {
+		l.Fatal("cannot apply migrations", zap.Error(err))
+	} else if n != 0 {
+		l.Info("applied migrations", zap.Int("count", n))
+	}
+
+	accountSvc := account.New(ds)
+	postSvc := post.New(ds)
+
+	srv, err := api.New(cfg.Server, l.With(zap.Namespace("server")), sessionSvc, accountSvc, postSvc)
 	if err != nil {
 		l.Fatal("cannot create server", zap.Error(err))
 	}
@@ -70,8 +90,8 @@ func main() {
 			l.Error("session service close error", zap.Error(err))
 		}
 
-		if err := accountSvc.Close(); err != nil {
-			l.Error("account service close error", zap.Error(err))
+		if err := ds.Close(); err != nil {
+			l.Error("data source close error", zap.Error(err))
 		}
 
 		close(idleConnsClosed)
