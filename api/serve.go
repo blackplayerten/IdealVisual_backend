@@ -25,6 +25,8 @@ func New(cfg *Config, l *zap.Logger, sessionSvc *session.Service, accountSvc *ac
 		s: fasthttp.Server{
 			NoDefaultContentType:  true,
 			NoDefaultServerHeader: true,
+
+			MaxRequestBodySize: cfg.HTTP.BodyLimitMB * 1024 * 1024,
 		},
 		l: l,
 

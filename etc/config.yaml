@@ -2,6 +2,7 @@ server:
   http:
     addr: ":8080"
     timeout: 1m
+    bodyLimitMB: 50
 
   static:
     root: "/usr/local/var/www/ideal-visual/static"

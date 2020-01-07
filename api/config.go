@@ -6,8 +6,9 @@ import (
 
 type Config struct {
 	HTTP struct {
-		Addr    string
-		Timeout time.Duration
+		Addr        string
+		Timeout     time.Duration
+		BodyLimitMB int
 	}
 	Static struct {
 		Root             string

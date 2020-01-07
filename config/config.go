@@ -33,8 +33,9 @@ func NewConfig() (*Config, error) {
 
 	viper.SetDefault("server", map[string]interface{}{
 		"http": map[string]interface{}{
-			"addr":    ":8080",
-			"timeout": 1 * time.Minute,
+			"addr":        ":8080",
+			"timeout":     1 * time.Minute,
+			"bodyLimitMB": 10,
 		},
 		"static": map[string]interface{}{
 			"root":             "/var/www/ideal-visual/static",
