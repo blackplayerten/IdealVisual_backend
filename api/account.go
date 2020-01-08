@@ -103,7 +103,13 @@ func (s *Server) updateAccount(ctx *fasthttp.RequestCtx) {
 
 	acc, err := s.accountSvc.Update(&upd)
 	if err != nil {
+		if err == database.ErrNotFound {
+			ctx.SetStatusCode(fasthttp.StatusNotFound)
+			return
+		}
+
 		s.processAccountCreationUpdateError(ctx, err)
+
 		return
 	}
 
@@ -113,6 +119,8 @@ func (s *Server) updateAccount(ctx *fasthttp.RequestCtx) {
 func (s *Server) processAccountCreationUpdateError(ctx *fasthttp.RequestCtx, err error) {
 	switch tErr := err.(type) {
 	case database.UniqueConstraintViolationError:
+		ctx.SetStatusCode(fasthttp.StatusUnprocessableEntity)
+
 		errors := Errors{Errors: []*FieldError{{
 			Field:   tErr.Field,
 			Reasons: []string{AlreadyExists},

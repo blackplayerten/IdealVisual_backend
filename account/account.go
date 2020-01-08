@@ -104,6 +104,10 @@ func (s *Service) Update(upd *FullAccount) (*Account, error) {
 
 	acc := new(Account)
 	if err := s.db.Get(acc, queryBuilder.String(), args...); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, database.ErrNotFound
+		}
+
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
 				return nil, database.UniqueConstraintViolationError{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
