@@ -41,7 +41,7 @@ func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendPost(in *jle
 			out.ID = string(in.String())
 		case "photo":
 			out.Photo = string(in.String())
-		case "photo_index":
+		case "photoIndex":
 			if in.IsNull() {
 				in.Skip()
 				out.PhotoIndex = nil
@@ -108,7 +108,7 @@ func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendPost(out *jw
 		out.String(string(in.Photo))
 	}
 	if in.PhotoIndex != nil {
-		const prefix string = ",\"photo_index\":"
+		const prefix string = ",\"photoIndex\":"
 		out.RawString(prefix)
 		out.Int(int(*in.PhotoIndex))
 	}
