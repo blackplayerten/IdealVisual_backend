@@ -67,7 +67,8 @@ func (s *Service) New(post *Post) (*Post, error) {
 	newP := new(Post)
 	if err := s.db.Get(newP, `INSERT INTO post (acc, photo, photo_index, date, place, text, last_updated)
 VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, photo, photo_index, date, place, text, last_updated`,
-		post.Acc, post.Photo, post.PhotoIndex, post.Date, post.Place, post.Text, time.Now()); err != nil {
+		post.Acc, post.Photo, post.PhotoIndex, post.Date, post.Place, post.Text,
+		time.Unix(time.Now().Unix(), 0)); err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23503" {
 				return nil, database.ForeignKeyViolation{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
@@ -95,7 +96,8 @@ func (s *Service) Update(post *Post) (*Post, error) {
 		return s.getByID(post.Acc, post.ID)
 	}
 
-	if err := database.UpdateSetOneField(&queryBuilder, "last_updated", time.Now(), &n, &args); err != nil {
+	if err := database.UpdateSetOneField(&queryBuilder, "last_updated",
+		time.Unix(time.Now().Unix(), 0), &n, &args); err != nil {
 		return nil, err
 	}
 
