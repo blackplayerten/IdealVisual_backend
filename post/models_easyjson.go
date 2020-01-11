@@ -83,6 +83,10 @@ func easyjsonD2b7633eDecodeGithubComBlackplayertenIdealVisualBackendPost(in *jle
 				}
 				*out.Text = string(in.String())
 			}
+		case "lastUpdated":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.LastUpdated).UnmarshalJSON(data))
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -126,6 +130,11 @@ func easyjsonD2b7633eEncodeGithubComBlackplayertenIdealVisualBackendPost(out *jw
 		const prefix string = ",\"text\":"
 		out.RawString(prefix)
 		out.String(string(*in.Text))
+	}
+	if true {
+		const prefix string = ",\"lastUpdated\":"
+		out.RawString(prefix)
+		out.Raw((in.LastUpdated).MarshalJSON())
 	}
 	out.RawByte('}')
 }

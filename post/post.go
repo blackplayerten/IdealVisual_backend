@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -17,7 +18,7 @@ func (s *Service) Get(userID uint64, postIDs []string) ([]Post, error) {
 	var posts []Post
 
 	var (
-		q    = "SELECT id, photo, photo_index, date, place, text FROM post WHERE "
+		q    = "SELECT id, photo, photo_index, date, place, text, last_updated FROM post WHERE "
 		args []interface{}
 	)
 
@@ -48,7 +49,7 @@ func (s *Service) getByID(userID uint64, postID string) (*Post, error) {
 	post := new(Post)
 
 	if err := s.db.Get(&post,
-		"SELECT id, photo, photo_index, date, place, text FROM post WHERE id = $1 AND acc = $2",
+		"SELECT id, photo, photo_index, date, place, text, last_updated FROM post WHERE id = $1 AND acc = $2",
 		userID,
 		postID,
 	); err != nil {
@@ -64,9 +65,9 @@ func (s *Service) getByID(userID uint64, postID string) (*Post, error) {
 
 func (s *Service) New(post *Post) (*Post, error) {
 	newP := new(Post)
-	if err := s.db.Get(newP, `INSERT INTO post (acc, photo, photo_index, date, place, text)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, photo, photo_index, date, place, text`,
-		post.Acc, post.Photo, post.PhotoIndex, post.Date, post.Place, post.Text); err != nil {
+	if err := s.db.Get(newP, `INSERT INTO post (acc, photo, photo_index, date, place, text, last_updated)
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, photo, photo_index, date, place, text, last_updated`,
+		post.Acc, post.Photo, post.PhotoIndex, post.Date, post.Place, post.Text, time.Now()); err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23503" {
 				return nil, database.ForeignKeyViolation{Field: s.db.PqGetKeyFromDetail(pqErr.Detail)}
@@ -92,6 +93,10 @@ func (s *Service) Update(post *Post) (*Post, error) {
 
 	if n == 1 {
 		return s.getByID(post.Acc, post.ID)
+	}
+
+	if err := database.UpdateSetOneField(&queryBuilder, "last_updated", time.Now(), &n, &args); err != nil {
+		return nil, err
 	}
 
 	if _, err := queryBuilder.WriteString(

@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS post (
     photo_index integer DEFAULT 0,
     date timestamp with time zone,
     place varchar(256),
-    text varchar(5000)
+    text varchar(5000),
+
+    last_updated timestamp with time zone DEFAULT now()
 );
 
 -- +migrate Down
