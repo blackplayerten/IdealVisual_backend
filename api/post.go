@@ -46,8 +46,13 @@ func (s *Server) getPost(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	jsonPosts := Posts(posts) // TODO: if len(posts) == 0 writes `null`, maybe we should write `[]`
-	s.writeJSONResponse(ctx, &jsonPosts)
+	if len(posts) != 0 {
+		jsonPosts := Posts(posts)
+		s.writeJSONResponse(ctx, &jsonPosts)
+	} else {
+		ctx.SetContentTypeBytes([]byte("application/json"))
+		ctx.Write([]byte("[]"))
+	}
 }
 
 func (s *Server) newPost(ctx *fasthttp.RequestCtx) {
