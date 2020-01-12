@@ -1,0 +1,16 @@
+[Unit]
+Description=Ideal Visual backend API daemon
+After=network-online.target 
+# postgresql-12.service redis.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/ideal-visual -c /usr/local/etc/ideal-visual.yaml
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=always
+RestartSec=3
+
+# [Install]
+# WantedBy=multi-user.target
